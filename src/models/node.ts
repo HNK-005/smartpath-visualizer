@@ -1,0 +1,68 @@
+export class Node {
+    private row: number;
+    private col: number;
+    private isWall: boolean = false;
+    private isStart: boolean = false;
+    private isEnd: boolean = false;
+    private distance: number = Infinity;
+    private heuristic: number = 0;
+    private previous: Node | null = null;
+    
+    constructor(row: number, col: number) {
+        this.row = row;
+        this.col = col;
+    }
+
+    public getRow(): number {
+        return this.row;
+    }
+
+    public getCol(): number {
+        return this.col;
+    }
+
+    public setWall(isWall: boolean): void {
+        this.isWall = isWall;
+    }
+
+    public getIsWall(): boolean {
+        return this.isWall;
+    }
+
+    public setStart(isStart: boolean): void {
+        this.isStart = isStart;
+    }
+
+    public getIsStart(): boolean {
+        return this.isStart;
+    }
+
+    public setEnd(isEnd: boolean): void {
+        this.isEnd = isEnd;
+    }
+
+    public getIsEnd(): boolean {
+        return this.isEnd;
+    }
+
+    public setDistance(distance: number): void {
+        this.distance = distance;
+    }
+    public getDistance(): number {
+        return this.distance;
+    }
+
+    public setHeuristic(heuristic: number): void {
+        this.heuristic = heuristic;
+    }
+    public getHeuristic(): number {
+        return this.heuristic;
+    }
+
+    public setPrevious(node: Node | null): void {
+        this.previous = node;
+    }
+    public getPrevious(): Node | null {
+        return this.previous;
+    }
+}

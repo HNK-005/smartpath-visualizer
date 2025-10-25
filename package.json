@@ -1,24 +1,25 @@
 {
-  "name": "smartpath-visualizer",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "test": "jest"
-  },
-  "devDependencies": {
-    "@types/jest": "^30.0.0",
-    "autoprefixer": "^10.4.21",
-    "jest": "^30.2.0",
-    "jsdom": "^27.0.1",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.18",
-    "ts-jest": "^29.4.5",
-    "typescript": "~5.9.3",
-    "vite": "^7.1.7",
-    "vite-plugin-string": "^1.2.3"
-  }
+    "name": "smartpath-visualizer",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "tsc && vite build",
+        "preview": "vite preview",
+        "test": "jest"
+    },
+    "devDependencies": {
+        "@types/jest": "^30.0.0",
+        "autoprefixer": "^10.4.21",
+        "jest": "^30.2.0",
+        "jest-environment-jsdom": "^30.2.0",
+        "jsdom": "^27.0.1",
+        "postcss": "^8.5.6",
+        "tailwindcss": "^3.4.18",
+        "ts-jest": "^29.4.5",
+        "typescript": "~5.9.3",
+        "vite": "^7.1.7",
+        "vite-plugin-string": "^1.2.3"
+    }
 }
