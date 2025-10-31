@@ -1,20 +1,24 @@
 import { PathfindingAlgorithm } from "./PathfindingAlgorithm";
-import { Grid, Node } from "../../models";
+import { MatrixModel, NodeModel } from "../../models";
 import { PathfindingResult } from "./PathfindingResult";
 
 export class AStarAlgorithm extends PathfindingAlgorithm {
-    private heuristic(a: Node, b: Node): number {
+    private heuristic(a: NodeModel, b: NodeModel): number {
         return (
             Math.abs(a.getRow() - b.getRow()) +
             Math.abs(a.getCol() - b.getCol())
         );
     }
 
-    findPath(grid: Grid, start: Node, end: Node): PathfindingResult {
-        const openSet: Node[] = [start];
-        const visitedOrder: Node[] = [];
-        const gScore = new Map<Node, number>([[start, 0]]);
-        const fScore = new Map<Node, number>([
+    findPath(
+        grid: MatrixModel,
+        start: NodeModel,
+        end: NodeModel
+    ): PathfindingResult {
+        const openSet: NodeModel[] = [start];
+        const visitedOrder: NodeModel[] = [];
+        const gScore = new Map<NodeModel, number>([[start, 0]]);
+        const fScore = new Map<NodeModel, number>([
             [start, this.heuristic(start, end)],
         ]);
 

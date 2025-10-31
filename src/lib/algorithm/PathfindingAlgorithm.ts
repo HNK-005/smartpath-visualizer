@@ -1,17 +1,21 @@
-import { Grid, Node } from "../../models";
+import { MatrixModel, NodeModel } from "../../models";
 import { PathfindingResult } from "./PathfindingResult";
 
 export abstract class PathfindingAlgorithm {
-    abstract findPath(grid: Grid, start: Node, end: Node): PathfindingResult;
+    abstract findPath(
+        board: MatrixModel,
+        start: NodeModel,
+        end: NodeModel
+    ): PathfindingResult;
 
-    protected getNeighbors(node: Node, grid: Grid): Node[] {
+    protected getNeighbors(node: NodeModel, board: MatrixModel): NodeModel[] {
         const directions = [
             [0, 1],
             [1, 0],
             [0, -1],
             [-1, 0],
         ];
-        const neighbors: Node[] = [];
+        const neighbors: NodeModel[] = [];
 
         for (const [dRow, dCol] of directions) {
             const newRow = node.getRow() + dRow;
@@ -20,10 +24,10 @@ export abstract class PathfindingAlgorithm {
             if (
                 newRow >= 0 &&
                 newCol >= 0 &&
-                newRow < grid.getNumRows() &&
-                newCol < grid.getNumCols()
+                newRow < board.getNumRows() &&
+                newCol < board.getNumCols()
             ) {
-                const neighbor = grid.getNode(newRow, newCol);
+                const neighbor = board.getNode(newRow, newCol);
                 if (!neighbor.getIsWall()) {
                     neighbors.push(neighbor);
                 }
@@ -33,9 +37,9 @@ export abstract class PathfindingAlgorithm {
         return neighbors;
     }
 
-    protected reconstructPath(endNode: Node): Node[] {
-        const path: Node[] = [];
-        let current: Node | null = endNode;
+    protected reconstructPath(endNode: NodeModel): NodeModel[] {
+        const path: NodeModel[] = [];
+        let current: NodeModel | null = endNode;
 
         while (current) {
             path.unshift(current);

@@ -1,9 +1,9 @@
-import { Node } from "../../models";
+import { NodeModel } from "../../models";
 
 export interface PathfindingResult {
-    /** Danh sách các node được duyệt theo thứ tự (dùng cho visualizer) */
-    visitedNodesInOrder: Node[];
+    /** Danh sách các node được duyệt theo thứ tự */
+    visitedNodesInOrder: NodeModel[];
 
     /** Đường đi ngắn nhất (nếu tìm thấy) */
-    shortestPath: Node[];
+    shortestPath: NodeModel[];
 }

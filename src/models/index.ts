@@ -1,2 +1,2 @@
-export * from "./node";
-export * from "./grid";
+export * from "./node.model";
+export * from "./matrix.model";

@@ -1,7 +1,7 @@
-import { Node } from "./node";
+import { NodeModel } from "./node.model";
 
-export class Grid {
-    private nodes: Node[][];
+export class MatrixModel {
+    private nodes: NodeModel[][];
     private numRows: number;
     private numCols: number;
 
@@ -9,16 +9,20 @@ export class Grid {
         this.numRows = numRows;
         this.numCols = numCols;
         this.nodes = [];
-        for (let row = 0; row < numRows; row++) {
-            const currentRow: Node[] = [];
-            for (let col = 0; col < numCols; col++) {
-                currentRow.push(new Node(row, col));
+        this.initializeMatrix();
+    }
+
+    initializeMatrix(): void {
+        for (let row = 0; row < this.numRows; row++) {
+            const currentRow: NodeModel[] = [];
+            for (let col = 0; col < this.numCols; col++) {
+                currentRow.push(new NodeModel(row, col));
             }
             this.nodes.push(currentRow);
         }
     }
 
-    public getNode(row: number, col: number): Node {
+    public getNode(row: number, col: number): NodeModel {
         return this.nodes[row][col];
     }
 

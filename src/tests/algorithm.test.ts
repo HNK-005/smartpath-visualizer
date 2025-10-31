@@ -1,12 +1,12 @@
-import { Grid } from "../models/grid";
-import { Node } from "../models/node";
+import { MatrixModel } from "../models/matrix.model";
+import { NodeModel } from "../models/node.model";
 import { AStarAlgorithm } from "../lib/algorithm/AStarAlgorithm";
 import { DijkstraAlgorithm } from "../lib/algorithm/DijkstraAlgorithm";
 import { BFSAlgorithm } from "../lib/algorithm/BFSAlgorithm";
 import { DFSAlgorithm } from "../lib/algorithm/DFSAlgorithm";
 import { PathfindingResult } from "../lib/algorithm/PathfindingResult";
 
-function isContiguousPath(path: Node[]): boolean {
+function isContiguousPath(path: NodeModel[]): boolean {
     if (path.length === 0) return false;
     for (let i = 1; i < path.length; i++) {
         const a = path[i - 1];
@@ -29,7 +29,11 @@ describe("Pathfinding algorithms (updated tests)", () => {
     const algorithms: [
         string,
         new () => {
-            findPath(grid: Grid, start: Node, end: Node): PathfindingResult;
+            findPath(
+                grid: MatrixModel,
+                start: NodeModel,
+                end: NodeModel
+            ): PathfindingResult;
         }
     ][] = [
         ["A*", AStarAlgorithm],
@@ -41,7 +45,7 @@ describe("Pathfinding algorithms (updated tests)", () => {
     for (const [name, Algo] of algorithms) {
         describe(name, () => {
             test("returns a PathfindingResult with a valid shortestPath on empty 3x3 grid", () => {
-                const grid = new Grid(3, 3);
+                const grid = new MatrixModel(3, 3);
                 const start = grid.getNode(0, 0);
                 const end = grid.getNode(2, 2);
 
@@ -59,7 +63,7 @@ describe("Pathfinding algorithms (updated tests)", () => {
             });
 
             test("returns empty shortestPath when path is blocked", () => {
-                const grid = new Grid(3, 3);
+                const grid = new MatrixModel(3, 3);
                 const start = grid.getNode(0, 0);
                 const end = grid.getNode(2, 2);
 
@@ -80,7 +84,7 @@ describe("Pathfinding algorithms (updated tests)", () => {
             });
 
             test("visitedNodesInOrder includes start as first visited element when reachable", () => {
-                const grid = new Grid(2, 2);
+                const grid = new MatrixModel(2, 2);
                 const start = grid.getNode(0, 0);
                 const end = grid.getNode(1, 1);
 

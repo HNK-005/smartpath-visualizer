@@ -1,16 +1,20 @@
 import { PathfindingAlgorithm } from "./PathfindingAlgorithm";
-import { Grid, Node } from "../../models";
+import { MatrixModel, NodeModel } from "../../models";
 import { PathfindingResult } from "./PathfindingResult";
 
 export class DijkstraAlgorithm extends PathfindingAlgorithm {
-    findPath(grid: Grid, start: Node, end: Node): PathfindingResult {
-        const visitedOrder: Node[] = [];
+    findPath(
+        board: MatrixModel,
+        start: NodeModel,
+        end: NodeModel
+    ): PathfindingResult {
+        const visitedOrder: NodeModel[] = [];
         start.setDistance(0);
 
-        const unvisited: Node[] = [];
-        for (let r = 0; r < grid.getNumRows(); r++) {
-            for (let c = 0; c < grid.getNumCols(); c++) {
-                unvisited.push(grid.getNode(r, c));
+        const unvisited: NodeModel[] = [];
+        for (let r = 0; r < board.getNumRows(); r++) {
+            for (let c = 0; c < board.getNumCols(); c++) {
+                unvisited.push(board.getNode(r, c));
             }
         }
 
@@ -28,7 +32,7 @@ export class DijkstraAlgorithm extends PathfindingAlgorithm {
                 };
             }
 
-            for (const neighbor of this.getNeighbors(current, grid)) {
+            for (const neighbor of this.getNeighbors(current, board)) {
                 const newDist = current.getDistance() + 1;
                 if (newDist < neighbor.getDistance()) {
                     neighbor.setDistance(newDist);

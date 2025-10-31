@@ -1,4 +1,4 @@
-export class Node {
+export class NodeModel {
     private row: number;
     private col: number;
     private isWall: boolean = false;
@@ -6,8 +6,8 @@ export class Node {
     private isEnd: boolean = false;
     private distance: number = Infinity;
     private heuristic: number = 0;
-    private previous: Node | null = null;
-    
+    private previous: NodeModel | null = null;
+
     constructor(row: number, col: number) {
         this.row = row;
         this.col = col;
@@ -59,10 +59,10 @@ export class Node {
         return this.heuristic;
     }
 
-    public setPrevious(node: Node | null): void {
+    public setPrevious(node: NodeModel | null): void {
         this.previous = node;
     }
-    public getPrevious(): Node | null {
+    public getPrevious(): NodeModel | null {
         return this.previous;
     }
 }

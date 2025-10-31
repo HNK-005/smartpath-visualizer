@@ -1,12 +1,16 @@
 import { PathfindingAlgorithm } from "./PathfindingAlgorithm";
-import { Grid, Node } from "../../models";
+import { MatrixModel, NodeModel } from "../../models";
 import { PathfindingResult } from "./PathfindingResult";
 
 export class DFSAlgorithm extends PathfindingAlgorithm {
-    findPath(grid: Grid, start: Node, end: Node): PathfindingResult {
-        const stack: Node[] = [start];
-        const visited = new Set<Node>([start]);
-        const visitedOrder: Node[] = [];
+    findPath(
+        board: MatrixModel,
+        start: NodeModel,
+        end: NodeModel
+    ): PathfindingResult {
+        const stack: NodeModel[] = [start];
+        const visited = new Set<NodeModel>([start]);
+        const visitedOrder: NodeModel[] = [];
 
         while (stack.length > 0) {
             const current = stack.pop()!;
@@ -19,7 +23,7 @@ export class DFSAlgorithm extends PathfindingAlgorithm {
                 };
             }
 
-            for (const neighbor of this.getNeighbors(current, grid)) {
+            for (const neighbor of this.getNeighbors(current, board)) {
                 if (!visited.has(neighbor)) {
                     visited.add(neighbor);
                     neighbor.setPrevious(current);

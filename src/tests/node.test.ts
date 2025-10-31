@@ -1,8 +1,8 @@
-import { Node } from "../models/node";
+import { NodeModel } from "../models/node.model";
 
 describe("Node model", () => {
     test("default properties", () => {
-        const n = new Node(2, 3);
+        const n = new NodeModel(2, 3);
         expect(n.getRow()).toBe(2);
         expect(n.getCol()).toBe(3);
         expect(n.getIsWall()).toBe(false);
@@ -14,8 +14,8 @@ describe("Node model", () => {
     });
 
     test("setters and getters", () => {
-        const a = new Node(0, 0);
-        const b = new Node(1, 1);
+        const a = new NodeModel(0, 0);
+        const b = new NodeModel(1, 1);
 
         a.setWall(true);
         expect(a.getIsWall()).toBe(true);
