@@ -1,10 +1,5 @@
-import { defineConfig } from "vite";
-import string from "vite-plugin-string";
+import { defineConfig } from 'vite';
 
 export default defineConfig({
-  plugins: [
-    string({
-      include: "**/*.html",
-    }),
-  ],
+  plugins: [],
 });
