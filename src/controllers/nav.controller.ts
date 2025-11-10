@@ -1,4 +1,5 @@
 import { AlgorithmType } from '../lib/algorithm/AlgorithmFactory';
+import { FileHandler } from '../lib/file';
 import { NavView } from '../views';
 
 export class NavController {
@@ -28,6 +29,9 @@ export class NavController {
   public buttonDisabled(state: boolean): void {
     this.view.getClearPathButton().disabled = state;
     this.view.getClearWallsButton().disabled = state;
+    this.view.getClearBoardButton().disabled = state;
+    this.view.getSaveFileButton().disabled = state;
+    this.view.getOpenFileButton().disabled = state;
   }
 
   public handleVisualize(
@@ -65,6 +69,42 @@ export class NavController {
     clearPathButton.addEventListener('click', () => {
       if (!this.isVisualizing) {
         clear();
+      }
+    });
+  }
+
+  handleClearBoard(clear: () => void): void {
+    const clearBoardButton = this.view.getClearBoardButton();
+    clearBoardButton.addEventListener('click', () => {
+      if (!this.isVisualizing) {
+        clear();
+      }
+    });
+  }
+
+  handleSaveFile(save: () => string): void {
+    const saveFileButton = this.view.getSaveFileButton();
+    saveFileButton.addEventListener('click', async () => {
+      if (!this.isVisualizing) {
+        const text = save();
+        if (text) {
+          const fileHandle = new FileHandler();
+          await fileHandle.saveFile(text);
+          alert('File saved successfully!');
+        }
+      }
+    });
+  }
+
+  handleOpenFile(open: (content: string) => void): void {
+    const openFileButton = this.view.getOpenFileButton();
+    openFileButton.addEventListener('click', async () => {
+      if (!this.isVisualizing) {
+        const fileHandle = new FileHandler();
+        const content = await fileHandle.readFile();
+        if (content) {
+          open(content);
+        }
       }
     });
   }
