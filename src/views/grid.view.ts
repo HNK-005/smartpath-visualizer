@@ -1,7 +1,14 @@
-export class GridView {
-  public readonly rowCount: number = 35;
-  public readonly colCount: number = 80;
+import { MatrixModel, NodeModel } from '../models';
 
+export enum NodeEnum {
+  START = 'start',
+  END = 'end',
+  WALL = 'wall',
+  VISITED = 'visited',
+  UNVISITED = 'unvisited',
+  SHORTEST_PATH = 'shortest-path',
+}
+export class GridView {
   private gridContainer: HTMLElement;
   private gridBoard: HTMLElement;
 
@@ -14,10 +21,10 @@ export class GridView {
     this.gridBoard = this.initBoard();
   }
 
-  initialize(): void {
+  initialize(matrix: MatrixModel): void {
     this.gridContainer.innerHTML = '';
     this.gridContainer.appendChild(this.gridBoard);
-    this.render();
+    this.render(matrix);
   }
 
   private initBoard(): HTMLElement {
@@ -26,26 +33,38 @@ export class GridView {
     return boardElement;
   }
 
-  public renderBoard(numRows: number, numCols: number): void {
+  public classNode(node: NodeModel): string {
+    const listClass = [];
+    if (node.getIsStart()) listClass.push(NodeEnum.START);
+    if (node.getIsEnd()) listClass.push(NodeEnum.END);
+    if (node.getIsWall()) listClass.push(NodeEnum.WALL);
+    if (node.getIsVisited()) listClass.push(NodeEnum.VISITED);
+    else listClass.push(NodeEnum.UNVISITED);
+    if (node.getIsPath()) listClass.push(NodeEnum.SHORTEST_PATH);
+    return listClass.join(' ');
+  }
+
+  public renderBoard(matrix: MatrixModel): void {
     const tbody = document.createElement('tbody');
 
-    for (let row = 0; row < numRows; row++) {
-      const tableRow = document.createElement('tr');
-      tableRow.id = `row-${row}`;
-      for (let col = 0; col < numCols; col++) {
-        const cell = document.createElement('td');
-        cell.id = `${row}-${col}`;
-        cell.classList.add('unvisited');
-        tableRow.appendChild(cell);
-      }
-      tbody.appendChild(tableRow);
-    }
+    matrix.getNodes().forEach((row, rowIndex) => {
+      const tr = document.createElement('tr');
+      row.forEach((node, colIndex) => {
+        const td = document.createElement('td');
+        td.id = `${rowIndex}-${colIndex}`;
+        td.className = this.classNode(node);
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+
+    this.gridBoard.innerHTML = '';
 
     this.gridBoard.appendChild(tbody);
   }
 
-  public render(): void {
-    this.renderBoard(this.rowCount, this.colCount);
+  public render(matrix: MatrixModel): void {
+    this.renderBoard(matrix);
   }
 
   public getBoardElement(): HTMLElement {

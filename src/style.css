@@ -172,3 +172,7 @@
 .btn-clear {
   @apply bg-gray-500 hover:bg-gray-700 disabled:opacity-50;
 }
+
+.btn-maze {
+  @apply bg-purple-500 hover:bg-purple-700 disabled:opacity-50;
+}

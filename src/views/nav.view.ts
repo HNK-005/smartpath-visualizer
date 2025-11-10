@@ -58,6 +58,15 @@ export class NavView {
         </select> 
     </div>
     <div class="action">
+      <button class="save-file btn btn-maze">
+        Export
+      </button>
+      <button class="open-file btn btn-maze">
+        Import
+      </button>
+      <button class="clear-board btn btn-clear">
+        Clear Board
+      </button>
       <button class="clear-walls btn btn-clear">
         Clear Walls
       </button>
@@ -96,5 +105,17 @@ export class NavView {
 
   public getClearPathButton(): HTMLButtonElement {
     return this.navControls.querySelector('.clear-path') as HTMLButtonElement;
+  }
+
+  public getClearBoardButton(): HTMLButtonElement {
+    return this.navControls.querySelector('.clear-board') as HTMLButtonElement;
+  }
+
+  public getSaveFileButton(): HTMLButtonElement {
+    return this.navControls.querySelector('.save-file') as HTMLButtonElement;
+  }
+
+  public getOpenFileButton(): HTMLButtonElement {
+    return this.navControls.querySelector('.open-file') as HTMLButtonElement;
   }
 }
