@@ -1,0 +1,390 @@
+<div class="flex h-screen bg-gray-100">
+  <aside class="flex h-screen bg-gray-100">
+    <div
+      class="w-80 bg-white overflow-y-auto h-screen flex flex-col justify-between"
+    >
+      <div>
+        <h1
+          class="text-2xl font-bold p-4 h-[3.25rem] border-b-[1px] border-r-[1px] border-secondary border-dashed"
+        >
+          SmartPath Visualizer
+        </h1>
+        <div class="flex flex-col gap-4 justify-between p-4 mt-4">
+          <div class="space-y-2">
+            <div class="space-y-2">
+              <label
+                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                for="algorithm"
+              >
+                Select an Algorithm:
+              </label>
+              <select id="algorithm"></select>
+            </div>
+            <div class="flex gap-2">
+              <button id="btn-run" disabled>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="size-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
+                  />
+                </svg>
+                Run
+              </button>
+              <button id="btn-pause" disabled>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="size-6"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M15.75 5.25v13.5m-7.5-13.5v13.5"
+                  />
+                </svg>
+              </button>
+            </div>
+            <button id="btn-reset-grid" class="w-full mt-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="size-6"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                />
+              </svg>
+
+              Reset Grid
+            </button>
+            <button id="btn-clear-walls" class="w-full mt-4">
+              Clear Walls
+            </button>
+            <button id="btn-clear-path" class="w-full mt-4">Clear Path</button>
+            <button id="btn-generate-maze" class="w-full mt-4" disabled>
+              Generate Maze
+            </button>
+            <div class="space-y-2">
+              <label
+                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                for="algorithm"
+              >
+                Visualization Speed:
+              </label>
+              <select id="speed"></select>
+            </div>
+            <div class="space-y-2">
+              <label
+                class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                for="algorithm"
+              >
+                Weight value:
+              </label>
+              <select id="weight"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="flex bottom-0 w-full divide-x-2 divide-dotted divide-gray-400"
+      >
+        <button id="btn-export-file" class="button rounded-none h-14">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5"
+            />
+          </svg>
+
+          Export
+        </button>
+        <button id="btn-import-file" class="rounded-none h-14">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"
+            />
+          </svg>
+
+          Import
+        </button>
+        <input
+          id="import-input"
+          type="file"
+          accept=".json"
+          style="display: none"
+        />
+      </div>
+    </div>
+  </aside>
+  <main class="flex-1 overflow-auto flex flex-col">
+    <header class="flex items-center justify-between bg-white p-4 z-10">
+      <div class="space-x-6 flex text-sm font-medium">
+        <div>
+          <span class="font-semibold">Visited Nodes:</span>
+          <span id="count-visited-nodes">0</span>
+        </div>
+        <div>
+          <span class="font-semibold">Path Length:</span>
+          <span id="count-path-length">0</span>
+        </div>
+        <div>
+          <span class="font-semibold">Total Path Cost:</span>
+          <span id="count-total-path-cost">0</span>
+        </div>
+        <div>
+          <span class="font-semibold">Execution Time:</span>
+          <span id="count-execution-time">0.00</span>ms
+        </div>
+      </div>
+    </header>
+    <div id="grid-container" class="flex-1 flex justify-center items-center">
+      <div
+        id="board"
+        class="border border-gray-300 bg-white p-2 inline-block rounded-lg"
+      >
+        <!-- Grid will be rendered here -->
+      </div>
+
+      <div
+        id="draw-toolbar"
+        class="fixed top-4 right-0 bg-white border shadow-lg rounded p-2 flex items-center space-x-2 z-50"
+      >
+        <button id="toggle-toolbar" class="p-0">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="size-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m8.25 4.5 7.5 7.5-7.5 7.5"
+            />
+          </svg>
+        </button>
+
+        <div id="draw-mode" class="transition-all duration-1000 ease-in-out">
+          <div class="flex items-center space-x-2">
+            <span class="text-sm font-medium mr-2">Draw Mode:</span>
+
+            <!-- Start -->
+            <input
+              type="radio"
+              name="mode"
+              id="mode-start"
+              class="hidden peer/start"
+              checked
+            />
+            <label
+              for="mode-start"
+              class="mode peer-checked/start:border-gray-500 peer-checked/start:border-2"
+            >
+              <span id="cell" class="block" data-type="start"></span>
+            </label>
+
+            <!-- End -->
+            <input
+              type="radio"
+              name="mode"
+              id="mode-end"
+              class="hidden peer/end"
+            />
+            <label
+              for="mode-end"
+              class="mode peer-checked/end:border-gray-500 peer-checked/end:border-2"
+            >
+              <span id="cell" class="block" data-type="end"></span>
+            </label>
+
+            <!-- Wall -->
+            <input
+              type="radio"
+              name="mode"
+              id="mode-wall"
+              class="hidden peer/wall"
+            />
+            <label
+              for="mode-wall"
+              class="mode peer-checked/wall:border-gray-500 peer-checked/wall:border-2"
+            >
+              <span id="cell" class="block" data-type="wall"></span>
+            </label>
+
+            <!-- Weight -->
+            <input
+              type="radio"
+              name="mode"
+              id="mode-weight"
+              class="hidden peer/weight"
+            />
+            <label
+              for="mode-weight"
+              class="mode peer-checked/weight:border-gray-500 peer-checked/weight:border-2"
+            >
+              <span
+                id="cell"
+                class="block"
+                data-type="weight"
+                data-weight="1"
+              ></span>
+            </label>
+
+            <!-- Clear -->
+            <input
+              type="radio"
+              name="mode"
+              id="mode-eraser"
+              class="hidden peer/eraser"
+            />
+            <label
+              for="mode-eraser"
+              class="mode peer-checked/eraser:border-gray-500 peer-checked/eraser:border-2"
+            >
+              <span id="cell" class="block" data-type="eraser">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  class="lucide lucide-eraser w-4 h-4"
+                >
+                  <path
+                    d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"
+                  ></path>
+                  <path d="M22 21H7"></path>
+                  <path d="m5 11 9 9"></path>
+                </svg>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="bg-white p-4 z-10">
+      <div class="flex flex-row items-center space-x-4">
+        <h2 class="font-semibold text-sm text-nowrap">Color Legend:</h2>
+        <ul
+          class="flex flex-row flex-wrap w-full space-x-4 text-sm justify-between"
+        >
+          <li class="flex items-center">
+            <span
+              id="cell"
+              data-type="start"
+              class="inline-block rounded mr-2"
+            ></span
+            >Start Node
+          </li>
+          <li class="flex items-center">
+            <span
+              id="cell"
+              data-type="end"
+              class="inline-block rounded mr-2"
+            ></span
+            >End Node
+          </li>
+          <li class="flex items-center">
+            <span
+              id="cell"
+              data-type="wall"
+              class="inline-block rounded mr-2"
+            ></span
+            >Walls
+          </li>
+          <li class="flex items-center">
+            <span
+              id="cell"
+              data-type="weight"
+              data-weight="1"
+              class="inline-block rounded mr-2"
+            ></span
+            >Weight 1
+          </li>
+          <li class="flex items-center">
+            <span
+              id="cell"
+              data-type="weight"
+              data-weight="5"
+              class="inline-block rounded mr-2"
+            ></span
+            >Weight 5
+          </li>
+          <li class="flex items-center">
+            <span
+              id="cell"
+              data-type="weight"
+              data-weight="10"
+              class="inline-block rounded mr-2"
+            ></span
+            >Weight 10
+          </li>
+          <li class="flex items-center">
+            <span
+              id="cell"
+              data-type="path"
+              class="inline-block rounded mr-2"
+            ></span
+            >Path
+          </li>
+          <li class="flex items-center">
+            <span
+              id="cell"
+              data-type="unvisited"
+              class="inline-block rounded mr-2"
+            ></span
+            >Unvisited
+          </li>
+          <li class="flex items-center">
+            <span
+              id="cell"
+              data-type="visited"
+              class="inline-block rounded mr-2"
+            ></span
+            >Visited
+          </li>
+        </ul>
+      </div>
+    </footer>
+  </main>
+</div>

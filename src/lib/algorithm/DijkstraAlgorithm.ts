@@ -14,20 +14,18 @@ export class DijkstraAlgorithm extends PathfindingAlgorithm {
       [],
       (a, b) => a.getDistance() - b.getDistance(),
     );
-    start.setDistance(0);
-    for (let r = 0; r < board.getNumRows(); r++) {
-      for (let c = 0; c < board.getNumCols(); c++) {
-        unvisited.insert(board.getNode(r, c));
-      }
-    }
+
+    unvisited.insert(start);
     while (unvisited.size() > 0) {
       const current = unvisited.shift()!;
+
       if (current.getIsWall()) continue;
       if (current.getDistance() === Infinity) break;
       if (current.getIsVisited()) continue;
 
       current.setVisited(true);
       visitedOrder.push(current);
+
       if (current === end) {
         return {
           visitedNodesInOrder: visitedOrder,
@@ -36,12 +34,16 @@ export class DijkstraAlgorithm extends PathfindingAlgorithm {
       }
 
       for (const neighbor of this.getNeighbors(current, board)) {
-        const newDist = current.getDistance() + 1;
+        const newDist = current.getDistance() + neighbor.getWeight() + 1;
 
         if (newDist < neighbor.getDistance()) {
           neighbor.setDistance(newDist);
           neighbor.setPrevious(current);
-          unvisited.insert(neighbor);
+          if (!unvisited.contains(neighbor)) {
+            unvisited.insert(neighbor);
+          } else {
+            unvisited.decreaseKey(neighbor);
+          }
         }
       }
     }
