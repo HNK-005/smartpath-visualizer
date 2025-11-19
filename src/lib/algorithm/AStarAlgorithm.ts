@@ -19,9 +19,12 @@ export class AStarAlgorithm extends PathfindingAlgorithm {
 
     const gScore = new Map<NodeModel, number>();
     const fScore = new Map<NodeModel, number>();
-    const inOpenSet = new Set<NodeModel>();
 
-    gScore.set(start, 0);
+    // FIX 2: Thêm closedSet và inOpenSet trở lại
+    const inOpenSet = new Set<NodeModel>();
+    const closedSet = new Set<NodeModel>(); // <-- THÊM LẠI
+
+    gScore.set(start, start.getDistance());
     fScore.set(start, this.heuristic(start, end));
 
     const openSet = new MinHeap<NodeModel>(
@@ -33,7 +36,13 @@ export class AStarAlgorithm extends PathfindingAlgorithm {
 
     while (openSet.size() > 0) {
       const current = openSet.shift()!;
+
+      if (current.getIsWall()) continue;
+      if (current.getDistance() === Infinity) break;
+      if (current.getIsVisited()) continue;
+
       inOpenSet.delete(current);
+      closedSet.add(current);
       visitedOrder.push(current);
 
       if (current === end) {
@@ -44,12 +53,14 @@ export class AStarAlgorithm extends PathfindingAlgorithm {
       }
 
       for (const neighbor of this.getNeighbors(current, grid)) {
-        if (neighbor.getIsWall()) continue;
+        if (closedSet.has(neighbor)) continue;
 
-        const tentativeG = (gScore.get(current) ?? Infinity) + 1;
+        const tentativeG =
+          (gScore.get(current) ?? Infinity) + neighbor.getWeight() + 1;
 
         if (tentativeG < (gScore.get(neighbor) ?? Infinity)) {
           neighbor.setPrevious(current);
+          neighbor.setDistance(tentativeG);
           gScore.set(neighbor, tentativeG);
           fScore.set(neighbor, tentativeG + this.heuristic(neighbor, end));
 
@@ -57,7 +68,7 @@ export class AStarAlgorithm extends PathfindingAlgorithm {
             openSet.insert(neighbor);
             inOpenSet.add(neighbor);
           } else {
-            openSet.insert(neighbor);
+            openSet.decreaseKey(neighbor);
           }
         }
       }

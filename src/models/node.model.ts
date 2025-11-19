@@ -6,6 +6,7 @@ export class NodeModel {
   private isEnd: boolean = false;
   private isVisited: boolean = false;
   private isPath: boolean = false;
+  private weight: number = 0;
   private distance: number = Infinity;
   private heuristic: number = 0;
   private previous: NodeModel | null = null;
@@ -13,6 +14,26 @@ export class NodeModel {
   constructor(row: number, col: number) {
     this.row = row;
     this.col = col;
+  }
+
+  public reset(): void {
+    this.isWall = false;
+    this.isStart = false;
+    this.isEnd = false;
+    this.isVisited = false;
+    this.isPath = false;
+    this.weight = 0;
+    this.distance = Infinity;
+    this.heuristic = 0;
+    this.previous = null;
+  }
+
+  public resetPathState(): void {
+    this.isVisited = false;
+    this.isPath = false;
+    this.distance = Infinity;
+    this.heuristic = 0;
+    this.previous = null;
   }
 
   public getRow(): number {
@@ -52,6 +73,14 @@ export class NodeModel {
   }
   public getDistance(): number {
     return this.distance;
+  }
+
+  public setWeight(weight: number): void {
+    this.weight = weight;
+  }
+
+  public getWeight(): number {
+    return this.weight;
   }
 
   public setHeuristic(heuristic: number): void {

@@ -1,220 +1,289 @@
 import { MatrixModel, NodeModel } from '../models';
-import { GridView, NodeEnum } from '../views';
-import {
-  AlgorithmFactory,
-  AlgorithmType,
-} from '../lib/algorithm/AlgorithmFactory';
+import { GridView } from '../views';
+import { AlgorithmFactory } from '../lib/algorithm/AlgorithmFactory';
+import { delay } from '../utils/delay';
+import { MazeRecursiveDivision } from '../lib/algorithm/MazeRecursiveDivision';
+import { AlgorithmEnum, DrawModeEnum, SpeedEnum } from '../app.enum';
 
 export class GridController {
   private model: MatrixModel;
   private view: GridView;
+  private drawMode: DrawModeEnum;
   private startNode: NodeModel | null = null;
   private endNode: NodeModel | null = null;
-  private isMousePressed: boolean = false;
-  private isVisualization: boolean = false;
-  private readonly defaultRows: number = 35;
-  private readonly defaultCols: number = 80;
-  private readonly limitRows: number = 100;
-  private readonly limitCols: number = 100;
+  private speed: SpeedEnum = SpeedEnum.MEDIUM;
+  private readonly defaultRows: number = 50;
+  private readonly defaultCols: number = 96;
 
   constructor(view: GridView) {
     this.view = view;
+    this.drawMode = DrawModeEnum.START;
     this.model = new MatrixModel(this.defaultRows, this.defaultCols);
-    this.initializeStartEndNodes({ row: 15, col: 30 }, { row: 15, col: 50 });
-    this.view.initialize(this.model);
-    this.setupHandlers();
+    this.view.render(this.model);
   }
 
-  public resetGrid(
+  public handleReRenderBoard(
     model: MatrixModel,
-    startNode: NodeModel,
-    endNode: NodeModel,
-    rows: number,
-    cols: number,
+    startNode: NodeModel | null,
+    endNode: NodeModel | null,
   ): void {
-    if (rows > this.limitRows || cols > this.limitCols) {
-      throw new Error(
-        `Grid size exceeds limit of ${this.limitRows} rows and ${this.limitCols} columns.`,
-      );
-    }
     this.model = model;
     this.startNode = startNode;
     this.endNode = endNode;
-    this.initializeStartEndNodes(
-      { row: startNode.getRow(), col: startNode.getCol() },
-      { row: endNode.getRow(), col: endNode.getCol() },
+    this.view.render(model);
+    document.dispatchEvent(
+      new CustomEvent('board-update', {
+        detail: { startNode: this.startNode, endNode: this.endNode },
+      }),
     );
-    this.view.initialize(this.model);
   }
 
-  private initializeStartEndNodes(
-    start: { row: number; col: number },
-    end: { row: number; col: number },
-  ): void {
-    this.startNode = this.model.getNode(start.row, start.col);
-    this.startNode.setStart(true);
-
-    this.endNode = this.model.getNode(end.row, end.col);
-    this.endNode.setEnd(true);
+  public handleDrawModeChange(): void {
+    this.view.bindDrawModeChange((mode: DrawModeEnum) => {
+      this.drawMode = mode;
+    });
   }
 
-  private setupHandlers(): void {
-    const boardElement = this.view.getBoardElement();
-
-    boardElement.addEventListener('mousedown', (e) => this.handleMouseDown(e));
-    boardElement.addEventListener('mouseenter', (e) =>
-      this.handleMouseEnter(e),
-    );
-    boardElement.addEventListener('mouseup', () => this.handleMouseUp());
-  }
-
-  private handleMouseDown(e: Event): void {
-    if (this.isVisualization) return;
-
-    const target = e.target as HTMLElement;
-    if (target.tagName === 'TD') {
-      const [row, col] = target.id.split('-').map(Number);
+  public handleDrawBoard(): void {
+    this.view.bindDrawBoard((row: number, col: number) => {
       const node = this.model.getNode(row, col);
+      const listNode: NodeModel[] = [];
 
-      if (!node.getIsStart() && !node.getIsEnd()) {
-        this.isMousePressed = true;
-        this.toggleWall(node, target);
+      node.reset();
+      if (!this.startNode?.getIsStart() && this.startNode === node) {
+        this.startNode = null;
       }
-    }
-  }
-
-  private handleMouseEnter(e: Event): void {
-    if (!this.isMousePressed || this.isVisualization) return;
-
-    const target = e.target as HTMLElement;
-    if (target.tagName === 'TD') {
-      const [row, col] = target.id.split('-').map(Number);
-      const node = this.model.getNode(row, col);
-
-      if (!node.getIsStart() && !node.getIsEnd()) {
-        this.toggleWall(node, target);
+      if (!this.endNode?.getIsEnd() && this.endNode === node) {
+        this.endNode = null;
       }
-    }
+      switch (this.drawMode) {
+        case DrawModeEnum.START:
+          if (this.startNode) {
+            this.startNode.reset();
+            listNode.push(this.startNode);
+          }
+          node.setStart(true);
+          node.setDistance(1);
+          this.startNode = node;
+          break;
+        case DrawModeEnum.END:
+          if (this.endNode) {
+            this.endNode.reset();
+            listNode.push(this.endNode);
+          }
+          node.setEnd(true);
+          this.endNode = node;
+          break;
+        case DrawModeEnum.WALL:
+          node.setWall(true);
+          break;
+        case DrawModeEnum.WEIGHT:
+          const weightValue = this.view.getWeightElement().dataset.weight
+            ? parseInt(this.view.getWeightElement().dataset.weight!, 10)
+            : 1;
+          node.setWeight(weightValue);
+          break;
+        case DrawModeEnum.ERASER:
+          break;
+      }
+      document.dispatchEvent(
+        new CustomEvent('board-update', {
+          detail: { startNode: this.startNode, endNode: this.endNode },
+        }),
+      );
+      listNode.push(node);
+      return listNode;
+    });
   }
 
-  private handleMouseUp(): void {
-    this.isMousePressed = false;
-  }
-
-  private toggleWall(node: NodeModel, element: HTMLElement): void {
-    const isWall = !node.getIsWall();
-    node.setWall(isWall);
-    this.view.updateNodeClass(
-      element,
-      isWall ? NodeEnum.WALL : NodeEnum.UNVISITED,
+  public handleResetGrid(): void {
+    this.model = new MatrixModel(this.defaultRows, this.defaultCols);
+    this.view.render(this.model);
+    this.startNode = null;
+    this.endNode = null;
+    document.dispatchEvent(
+      new CustomEvent('board-update', {
+        detail: { startNode: this.startNode, endNode: this.endNode },
+      }),
     );
   }
 
-  public async visualize(algorithmType: AlgorithmType): Promise<void> {
-    if (this.isVisualization || !this.startNode || !this.endNode) {
+  public handleClearWeights(): void {
+    this.view.bindClearWeights(() => {
+      const updatedNodes: NodeModel[] = [];
+      for (let row = 0; row < this.model.getNumRows(); row++) {
+        for (let col = 0; col < this.model.getNumCols(); col++) {
+          const node = this.model.getNode(row, col);
+
+          if (node.getWeight() > 0) {
+            node.setWeight(0);
+            updatedNodes.push(node);
+          }
+        }
+      }
+
+      return updatedNodes;
+    });
+  }
+
+  public handleClearPath(): void {
+    this.view.bindClearPath(() => {
+      const updatedNodes: NodeModel[] = [];
+      for (let row = 0; row < this.model.getNumRows(); row++) {
+        for (let col = 0; col < this.model.getNumCols(); col++) {
+          const node = this.model.getNode(row, col);
+
+          if (
+            node.getIsVisited() ||
+            node.getIsPath() ||
+            node.getDistance() !== Infinity ||
+            node.getHeuristic() !== 0 ||
+            node.getPrevious() !== null
+          ) {
+            node.resetPathState();
+            if (node === this.startNode) {
+              node.setDistance(1);
+            }
+            updatedNodes.push(node);
+          }
+        }
+      }
+
+      return updatedNodes;
+    });
+  }
+
+  public handleClearWalls(): void {
+    this.view.bindClearWalls(() => {
+      const updatedNodes: NodeModel[] = [];
+      for (let row = 0; row < this.model.getNumRows(); row++) {
+        for (let col = 0; col < this.model.getNumCols(); col++) {
+          const node = this.model.getNode(row, col);
+
+          if (node.getIsWall()) {
+            node.setWall(false);
+            updatedNodes.push(node);
+          }
+        }
+      }
+
+      return updatedNodes;
+    });
+  }
+
+  public handleCounts(): void {
+    document.addEventListener('node-visited', (e: any) => {
+      const countNode = e.detail.countNode as number;
+      this.view.updateCountVisitedNodes(countNode);
+    });
+
+    document.addEventListener('node-path', (e: any) => {
+      const countNode = e.detail.countNode as number;
+      this.view.updateCountPathNodes(countNode);
+    });
+
+    document.addEventListener('visualization-end', (e: any) => {
+      if (e.detail) {
+        const totalPathCost = e.detail.totalPathCost as number;
+        const executionTime = e.detail.executionTime as number;
+        this.view.updateTotalPathCost(totalPathCost);
+        this.view.updateExecutionTime(executionTime);
+      }
+    });
+  }
+
+  public async visualize(
+    algorithmType: AlgorithmEnum,
+    pausePoint: () => Promise<void>,
+  ): Promise<void> {
+    if (!this.startNode || !this.endNode) {
       return;
     }
 
-    this.clearPath();
-    this.isVisualization = true;
+    const time = Date.now();
 
     const algorithm = AlgorithmFactory.create(algorithmType);
     const result = algorithm.findPath(this.model, this.startNode, this.endNode);
 
-    await this.animateVisitedNodes(result.visitedNodesInOrder);
+    await this.animateVisitedNodes(result.visitedNodesInOrder, pausePoint);
 
     if (result.shortestPath.length > 0) {
-      await this.animateShortestPath(result.shortestPath);
+      await this.animateShortestPath(result.shortestPath, pausePoint);
     }
-
-    this.isVisualization = false;
+    document.dispatchEvent(
+      new CustomEvent('visualization-end', {
+        detail: {
+          totalPathCost: this.endNode.getDistance(),
+          executionTime: Date.now() - time,
+        },
+      }),
+    );
   }
 
-  private async animateVisitedNodes(visitedNodes: NodeModel[]): Promise<void> {
+  private async animateVisitedNodes(
+    visitedNodes: NodeModel[],
+    pausePoint: () => Promise<void>,
+  ): Promise<void> {
     for (let i = 0; i < visitedNodes.length; i++) {
-      if (this.isVisualization === false) return;
-      await this.delay(10);
+      await pausePoint();
+      await delay(this.speed);
+
       const node = visitedNodes[i];
 
-      node.setVisited(true);
+      document.dispatchEvent(
+        new CustomEvent('node-visited', {
+          detail: { countNode: i + 1 },
+        }),
+      );
 
-      const element = this.view.getNodeElement(node.getRow(), node.getCol());
-
-      if (!node.getIsStart() && !node.getIsEnd()) {
-        this.view.updateNodeClass(element, NodeEnum.VISITED);
-      } else {
-        this.view.removeNodeClass(element, NodeEnum.UNVISITED);
-        this.view.addNodeClass(element, NodeEnum.VISITED);
-      }
+      if (node.getIsStart() || node.getIsEnd()) continue;
+      node.reset();
       node.setVisited(true);
+      this.view.bindUpdateBoard(node);
     }
   }
 
-  private async animateShortestPath(path: NodeModel[]): Promise<void> {
+  private async animateShortestPath(
+    path: NodeModel[],
+    pausePoint: () => Promise<void>,
+  ): Promise<void> {
     for (let i = 0; i < path.length; i++) {
-      if (this.isVisualization === false) return;
-      await this.delay(50);
+      await pausePoint();
+      await delay(this.speed * 1.5);
       const node = path[i];
 
+      document.dispatchEvent(
+        new CustomEvent('node-path', {
+          detail: { countNode: i + 1 },
+        }),
+      );
+
+      if (node.getIsStart() || node.getIsEnd()) continue;
+      node.reset();
       node.setPath(true);
-
-      const element = this.view.getNodeElement(node.getRow(), node.getCol());
-      if (!node.getIsStart() && !node.getIsEnd()) {
-        this.view.updateNodeClass(element, NodeEnum.SHORTEST_PATH);
-      } else {
-        this.view.removeNodeClass(element, NodeEnum.VISITED);
-        this.view.addNodeClass(element, NodeEnum.SHORTEST_PATH);
-      }
+      this.view.bindUpdateBoard(node);
     }
   }
 
-  public clearWalls(): void {
-    for (let row = 0; row < this.model.getNumRows(); row++) {
-      for (let col = 0; col < this.model.getNumCols(); col++) {
-        const node = this.model.getNode(row, col);
-        const element = this.view.getNodeElement(row, col);
+  public setDrawMode(mode: DrawModeEnum): void {
+    this.drawMode = mode;
+  }
 
-        if (node.getIsWall()) {
-          node.setWall(false);
+  public setSpeed(speed: SpeedEnum): void {
+    this.speed = speed;
+  }
 
-          this.view.updateNodeClass(element, NodeEnum.UNVISITED);
-        }
+  public generateMaze(): void {
+    if (!this.startNode || !this.endNode) return;
+    const maze = new MazeRecursiveDivision(this.model);
+    maze.generate(this.startNode, this.endNode);
+
+    for (let r = 0; r < this.model.getNumRows(); r++) {
+      for (let c = 0; c < this.model.getNumCols(); c++) {
+        const node = this.model.getNode(r, c);
+        this.view.bindUpdateBoard(node);
       }
     }
-  }
-
-  public clearPath(): void {
-    for (let row = 0; row < this.model.getNumRows(); row++) {
-      for (let col = 0; col < this.model.getNumCols(); col++) {
-        const node = this.model.getNode(row, col);
-        const element = this.view.getNodeElement(row, col);
-
-        node.setVisited(false);
-        node.setPath(false);
-        node.setDistance(Infinity);
-        node.setHeuristic(0);
-        node.setPrevious(null);
-
-        if (!node.getIsWall()) {
-          this.view.removeNodeClass(element, NodeEnum.VISITED);
-          this.view.removeNodeClass(element, NodeEnum.SHORTEST_PATH);
-          this.view.addNodeClass(element, NodeEnum.UNVISITED);
-        }
-      }
-    }
-  }
-
-  public clearBoard(): void {
-    this.clearWalls();
-    this.clearPath();
-  }
-
-  public setIsVisualization(isRunning: boolean): void {
-    this.isVisualization = isRunning;
-  }
-
-  public getIsVisualization(): boolean {
-    return this.isVisualization;
   }
 
   public getModel(): MatrixModel {
@@ -227,9 +296,5 @@ export class GridController {
 
   public getEndNode(): NodeModel | null {
     return this.endNode;
-  }
-
-  private delay(ms: number): Promise<void> {
-    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }

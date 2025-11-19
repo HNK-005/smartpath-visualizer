@@ -1,0 +1,174 @@
+#nav-container {
+  @apply bg-blue-500 p-4 flex items-center justify-between;
+}
+
+#grid-container {
+  @apply max-w-full;
+}
+
+.nav-header {
+  @apply text-white text-2xl font-bold;
+}
+
+.nav-controls {
+  @apply container mx-auto flex items-center;
+}
+
+.action {
+  @apply flex-1 flex justify-end;
+}
+
+.action .btn {
+  @apply text-white font-bold py-2 px-4 rounded mr-2;
+}
+
+.action .btn-start {
+  @apply bg-green-500 hover:bg-green-700;
+}
+
+.action .btn-stop {
+  @apply bg-red-500 hover:bg-red-700;
+}
+
+.board {
+  @apply mx-auto my-4;
+  border-collapse: collapse;
+}
+
+.board td {
+  @apply w-6 h-6;
+}
+
+.unvisited {
+  @apply bg-white hover:bg-blue-100 border border-blue-300 select-none;
+}
+
+/* START NODE */
+.start {
+  @apply bg-white hover:bg-blue-100 border border-gray-200 select-none;
+  position: relative;
+}
+.start::after {
+  content: '🚀';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+}
+
+.end {
+  @apply bg-white hover:bg-blue-100 border border-gray-200 select-none;
+  position: relative;
+}
+.end::after {
+  content: '🏁';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+}
+
+.visited {
+  border: 1px solid rgb(175, 216, 248);
+  animation-name: visitedAnimation;
+  animation-duration: 1.5s;
+  animation-timing-function: ease-out;
+  animation-delay: 0;
+  animation-direction: alternate;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+}
+
+@keyframes visitedAnimation {
+  0% {
+    transform: scale(0.3);
+    background-color: rgba(0, 0, 66, 0.75);
+    border-radius: 100%;
+  }
+
+  50% {
+    background-color: rgba(17, 104, 217, 0.75);
+  }
+
+  75% {
+    transform: scale(1.2);
+    background-color: rgba(0, 217, 159, 0.75);
+  }
+
+  100% {
+    transform: scale(1);
+    background-color: rgba(0, 190, 218, 0.75);
+  }
+}
+
+.shortest-path {
+  background-color: rgb(255, 254, 106);
+  animation-name: triangletwo;
+  animation-duration: 1.5s;
+  animation-timing-function: linear;
+  animation-delay: 0;
+  animation-direction: alternate;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+}
+
+@keyframes triangletwo {
+  0% {
+    transform: scale(0.6);
+    background-color: rgb(255, 254, 106);
+  }
+
+  50% {
+    transform: scale(1.2);
+    background-color: rgb(255, 254, 106);
+  }
+
+  100% {
+    transform: scale(1);
+    background-color: rgb(255, 254, 106);
+  }
+}
+
+.wall {
+  animation-name: wallAnimation;
+  animation-duration: 0.3s;
+  animation-timing-function: ease-out;
+  animation-delay: 0;
+  animation-direction: alternate;
+  animation-iteration-count: 1;
+  animation-fill-mode: forwards;
+  animation-play-state: running;
+}
+
+@keyframes wallAnimation {
+  0% {
+    transform: scale(0.3);
+    background-color: rgb(12, 53, 71);
+  }
+
+  50% {
+    transform: scale(1.2);
+    background-color: rgb(12, 53, 71);
+  }
+
+  100% {
+    transform: scale(1);
+    background-color: rgb(12, 53, 71);
+  }
+}
+
+.combobox-label {
+  @apply text-white mr-2;
+}
+
+.btn-clear {
+  @apply bg-gray-500 hover:bg-gray-700 disabled:opacity-50;
+}
+
+.btn-maze {
+  @apply bg-purple-500 hover:bg-purple-700 disabled:opacity-50;
+}

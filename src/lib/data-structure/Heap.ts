@@ -26,11 +26,31 @@ export class Heap<T> {
 
 export class MinHeap<T> extends Heap<T> {
   private comparator: (a: T, b: T) => number;
+  private indexMap = new Map<T, number>(); // Map<Item, IndexInHeapArray>
 
   constructor(data: T[] = [], comparator: (a: T, b: T) => number) {
-    super(data);
+    super(data); // this.heap = data
     this.comparator = comparator;
+
+    // FIX 1: Populate the indexMap with initial data
+    this.heap.forEach((item, index) => {
+      this.indexMap.set(item, index);
+    });
+
     this.buildHeap();
+  }
+
+  // FIX 2: Override the swap method to update the indexMap
+  swap(i: number, j: number) {
+    const itemI = this.heap[i];
+    const itemJ = this.heap[j];
+
+    // Swap items in the array
+    super.swap(i, j);
+
+    // Update their positions in the map
+    this.indexMap.set(itemI, j);
+    this.indexMap.set(itemJ, i);
   }
 
   private buildHeap() {
@@ -39,42 +59,62 @@ export class MinHeap<T> extends Heap<T> {
     }
   }
 
-  insert(value: T) {
-    this.heap.push(value);
-    this.heapifyUp(this.size() - 1);
+  contains(item: T): boolean {
+    return this.indexMap.has(item);
   }
 
-  /**
-   * Chuẩn MinHeap pop root
-   */
-  shift(): T | null {
-    if (this.size() === 0) return null;
-    if (this.size() === 1) return this.heap.pop()!;
+  insert(item: T) {
+    this.heap.push(item);
+    this.indexMap.set(item, this.heap.length - 1);
+    this.heapifyUp(this.heap.length - 1);
+  }
+
+  decreaseKey(item: T) {
+    const idx = this.indexMap.get(item);
+    if (idx !== undefined) {
+      this.heapifyUp(idx);
+    }
+  }
+
+  shift(): T | undefined {
+    if (this.heap.length === 0) return undefined;
 
     const root = this.heap[0];
-    this.heap[0] = this.heap.pop()!;
-    this.heapifyDown(0);
+    const last = this.heap.pop();
+
+    this.indexMap.delete(root);
+
+    if (this.heap.length > 0 && last !== undefined) {
+      this.heap[0] = last;
+      this.indexMap.set(last, 0);
+      this.heapifyDown(0);
+    }
 
     return root;
   }
 
   private heapifyUp(i: number) {
-    while (i > 0) {
-      const parentIndex = this.getParentIndex(i);
-      if (this.comparator(this.heap[i], this.heap[parentIndex]) >= 0) break;
-
-      this.swap(i, parentIndex);
-      i = parentIndex;
+    let currentIndex = i;
+    while (currentIndex > 0) {
+      const parentIndex = this.getParentIndex(currentIndex);
+      if (
+        this.comparator(this.heap[currentIndex], this.heap[parentIndex]) >= 0
+      ) {
+        break;
+      }
+      this.swap(currentIndex, parentIndex); // Use the overridden swap
+      currentIndex = parentIndex;
     }
   }
 
   private heapifyDown(i: number) {
     const size = this.size();
+    let currentIndex = i;
 
     while (true) {
-      const left = this.getLeftChildIndex(i);
-      const right = this.getRightChildIndex(i);
-      let smallest = i;
+      const left = this.getLeftChildIndex(currentIndex);
+      const right = this.getRightChildIndex(currentIndex);
+      let smallest = currentIndex;
 
       if (
         left < size &&
@@ -90,10 +130,12 @@ export class MinHeap<T> extends Heap<T> {
         smallest = right;
       }
 
-      if (smallest === i) break;
+      if (smallest === currentIndex) {
+        break;
+      }
 
-      this.swap(i, smallest);
-      i = smallest;
+      this.swap(currentIndex, smallest); // Use the overridden swap
+      currentIndex = smallest;
     }
   }
 }
