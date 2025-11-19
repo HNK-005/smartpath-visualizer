@@ -2,18 +2,16 @@ import './style.css';
 import { GridView, NavView } from './views';
 import { NavController } from './controllers/nav.controller';
 import { GridController } from './controllers/grid.controller';
-// import { formatData } from './utils/formatData';
-// import { MatrixModel } from './models';
-import app from './app.html?raw';
 import { PauseableAsync } from './utils/pause';
 import { AlgorithmEnum, IconEnum, SpeedEnum } from './app.enum';
 import { MatrixModel, NodeModel } from './models';
 import { formatData } from './utils/formatData';
 
+import app from './app.html?raw';
+
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = app;
 
 document.addEventListener('DOMContentLoaded', () => {
-  console.log('App initialized');
   const navView = new NavView();
   const navController = new NavController(navView);
 

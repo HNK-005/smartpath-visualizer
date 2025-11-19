@@ -1,4 +1,3 @@
-// import { FileHandler } from '../lib/file';
 import { FileHandler } from '../lib/file';
 import { NavView } from '../views';
 
