@@ -133,6 +133,8 @@ export class GridController {
         for (let col = 0; col < this.model.getNumCols(); col++) {
           const node = this.model.getNode(row, col);
 
+          if (node.getWeight() > 0) continue;
+
           if (
             node.getIsVisited() ||
             node.getIsPath() ||
