@@ -17,31 +17,22 @@ export class AStarAlgorithm extends PathfindingAlgorithm {
   ): PathfindingResult {
     const visitedOrder: NodeModel[] = [];
 
-    const gScore = new Map<NodeModel, number>();
-    const fScore = new Map<NodeModel, number>();
+    const closedSet = new Set<NodeModel>();
 
-    // FIX 2: Thêm closedSet và inOpenSet trở lại
-    const inOpenSet = new Set<NodeModel>();
-    const closedSet = new Set<NodeModel>(); // <-- THÊM LẠI
-
-    gScore.set(start, start.getDistance());
-    fScore.set(start, this.heuristic(start, end));
-
-    const openSet = new MinHeap<NodeModel>(
+    const unvisited = new MinHeap<NodeModel>(
       [start],
-      (a, b) => (fScore.get(a) ?? Infinity) - (fScore.get(b) ?? Infinity),
+      (a, b) => a.getHeuristic() - b.getHeuristic(),
     );
 
-    inOpenSet.add(start);
+    unvisited.insert(start);
 
-    while (openSet.size() > 0) {
-      const current = openSet.shift()!;
+    while (unvisited.size() > 0) {
+      const current = unvisited.shift()!;
 
       if (current.getIsWall()) continue;
       if (current.getDistance() === Infinity) break;
       if (current.getIsVisited()) continue;
 
-      inOpenSet.delete(current);
       closedSet.add(current);
       visitedOrder.push(current);
 
@@ -55,20 +46,17 @@ export class AStarAlgorithm extends PathfindingAlgorithm {
       for (const neighbor of this.getNeighbors(current, grid)) {
         if (closedSet.has(neighbor)) continue;
 
-        const tentativeG =
-          (gScore.get(current) ?? Infinity) + neighbor.getWeight() + 1;
+        const newDist = current.getDistance() + neighbor.getWeight() + 1;
 
-        if (tentativeG < (gScore.get(neighbor) ?? Infinity)) {
+        if (newDist < neighbor.getDistance()) {
           neighbor.setPrevious(current);
-          neighbor.setDistance(tentativeG);
-          gScore.set(neighbor, tentativeG);
-          fScore.set(neighbor, tentativeG + this.heuristic(neighbor, end));
+          neighbor.setDistance(newDist);
+          neighbor.setHeuristic(newDist + this.heuristic(neighbor, end));
 
-          if (!inOpenSet.has(neighbor)) {
-            openSet.insert(neighbor);
-            inOpenSet.add(neighbor);
+          if (!unvisited.contains(neighbor)) {
+            unvisited.insert(neighbor);
           } else {
-            openSet.decreaseKey(neighbor);
+            unvisited.decreaseKey(neighbor);
           }
         }
       }
