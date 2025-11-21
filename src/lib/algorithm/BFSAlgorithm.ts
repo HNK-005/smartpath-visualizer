@@ -32,9 +32,7 @@ export class BFSAlgorithm extends PathfindingAlgorithm {
         if (!visited.has(neighbor)) {
           visited.add(neighbor);
           neighbor.setPrevious(current);
-          neighbor.setDistance(
-            current.getDistance() + neighbor.getWeight() + 1,
-          );
+          neighbor.setDistance(current.getDistance() + 1);
           queue.push(neighbor);
         }
       }

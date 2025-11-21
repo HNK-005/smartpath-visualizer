@@ -72,8 +72,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   navController.handleButtonResetGridClick(() => {
-    document.dispatchEvent(new Event('visualization-end'));
+    task.reset();
     gridController.handleResetGrid();
+    document.dispatchEvent(new Event('visualization-end'));
   });
   navController.handleButtonClearPathClick(() => {
     gridController.handleClearPath();

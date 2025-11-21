@@ -26,6 +26,11 @@ export class PauseableAsync {
     this.task();
   }
 
+  public reset() {
+    this.isPaused = false;
+    this.pauseResolve = null;
+  }
+
   public getIsPaused(): boolean {
     return this.isPaused;
   }
