@@ -31,6 +31,7 @@ export class GridController {
     this.startNode = startNode;
     this.endNode = endNode;
     this.view.render(model);
+    this.view.resetCounters();
     document.dispatchEvent(
       new CustomEvent('board-update', {
         detail: { startNode: this.startNode, endNode: this.endNode },
@@ -101,6 +102,7 @@ export class GridController {
     this.view.render(this.model);
     this.startNode = null;
     this.endNode = null;
+    this.view.resetCounters();
     document.dispatchEvent(
       new CustomEvent('board-update', {
         detail: { startNode: this.startNode, endNode: this.endNode },
