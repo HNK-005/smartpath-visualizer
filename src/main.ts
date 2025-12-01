@@ -78,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   navController.handleButtonClearPathClick(() => {
     gridController.handleClearPath();
+    gridView.resetCounters();
   });
 
   navController.handleButtonClearWallsClick(() => {
@@ -158,14 +159,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('visualization-end', () => {
-    document.dispatchEvent(
-      new CustomEvent('board-update', {
-        detail: {
-          startNode: gridController.getStartNode(),
-          endNode: gridController.getEndNode(),
-        },
-      }),
-    );
     buttonPause.disabled = true;
     buttonRun.innerHTML = innerHTMLRun;
     buttonPause.innerHTML = innerHTMLPause;
@@ -174,7 +167,14 @@ document.addEventListener('DOMContentLoaded', () => {
     buttonResetGrid.disabled = false;
     buttonClearPath.disabled = false;
     buttonClearWalls.disabled = false;
-    buttonGenerateMaze.disabled = false;
+    document.dispatchEvent(
+      new CustomEvent('board-update', {
+        detail: {
+          startNode: gridController.getStartNode(),
+          endNode: gridController.getEndNode(),
+        },
+      }),
+    );
   });
 
   const createNodeModel = (node: any) => {

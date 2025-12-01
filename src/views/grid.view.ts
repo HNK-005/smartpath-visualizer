@@ -36,7 +36,7 @@ export class GridView {
     if (node.getIsStart()) return NodeTypeEnum.START;
     if (node.getIsEnd()) return NodeTypeEnum.END;
     if (node.getIsWall()) return NodeTypeEnum.WALL;
-    if (node.getWeight() >= 1)return NodeTypeEnum.WEIGHT;
+    if (node.getWeight() >= 1) return NodeTypeEnum.WEIGHT;
     if (node.getIsVisited()) return NodeTypeEnum.VISITED;
     if (node.getIsPath()) return NodeTypeEnum.PATH;
     return NodeTypeEnum.UNVISITED;
@@ -171,10 +171,17 @@ export class GridView {
     });
   }
 
+  public resetCounters(): void {
+    this.updateCountPathNodes(0);
+    this.updateCountVisitedNodes(0);
+    this.updateTotalPathCost(0);
+    this.updateExecutionTime(0);
+  }
+
   public updateCountVisitedNodes(count: number): void {
     this.countVisitedNodes.innerText = count.toString();
   }
-  
+
   public updateCountPathNodes(count: number): void {
     this.countPathNodes.innerText = count.toString();
   }
@@ -211,7 +218,7 @@ export class GridView {
   public getCountVisitedNodes(): HTMLSpanElement {
     return this.countVisitedNodes;
   }
-  
+
   public getCountPathNodes(): HTMLSpanElement {
     return this.countPathNodes;
   }
@@ -219,7 +226,7 @@ export class GridView {
   public getTotalPathCost(): HTMLSpanElement {
     return this.totalPathCost;
   }
-  
+
   public getExecutionTime(): HTMLSpanElement {
     return this.executionTime;
   }
